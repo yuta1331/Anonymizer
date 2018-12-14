@@ -16,16 +16,15 @@ K = 4  # for k-anonymity
 ATTR_PRIORITY = ['sex', 'addr0', 'addr1', 'addr2', 'addr3', 'addr4',
                  'poscode', 'tel', 'birth', 'time']
 
-SEQUENTIAL = True
-
 
 ########### initial ############
 init_row, datalist = subset.parsed_list(INFILE, SENSITIVE)
 
-if SEQUENTIAL is False:
+if 'seq' not in init_row:
     init_row.append('seq')
     for i, data in enumerate(datalist):  # 参照渡し
         data.append(i)
+    subset.csv_composer(init_row, datalist, SENSITIVE, INFILE, len(init_row)-1)
 
 seq_index = init_row.index('seq')
 
@@ -39,9 +38,9 @@ datalist = anonymizer.easy_anonymizer(datalist,
                                       ATTR_LIST,
                                       priority,
                                       seq_index)
-subset.all_sorted_list(datalist, [SENSITIVE, seq_index], datalist, None)
+subset.all_sorted_list(datalist, [SENSITIVE, seq_index], None)
 
-freq = anonymizer.freq_list(datalist, SENSITIVE)
+freq = anonymizer.freq_list(datalist, SENSITIVE, seq_index)
 calc_k = anonymizer.calc_k(freq)
 print(ANONYM, ': ', calc_k)
 

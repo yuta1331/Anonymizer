@@ -5,23 +5,26 @@ from copy import deepcopy
 import subset
 
 
-def quasi_row(row, sensitive):
-    if sensitive + 1 < len(row):
-        return row[:sensitive] + row[sensitive + 1:]
-    return row[:sensitive]
+def quasi_row(row, sensitive_l):
+    sensitive_l.sort(reverse=True)
+    result = deepcopy(row)
+    for sensitive in sensitive_l:
+        del result[sensitive]
+    return result
 
 
-def quasi_list(datalist, sensitive):
-    if sensitive == None: return deepcopy(datalist)
+def quasi_list(datalist, sensitive_l):
+    if sensitive_l == None: return deepcopy(datalist)
     quasilist = list()
     for i in range(len(datalist)):
-        quasilist.append(quasi_row(datalist[i], sensitive))
+        quasilist.append(quasi_row(datalist[i], sensitive_l))
     return quasilist
 
 
-def freq_list(datalist, sensitive):  # calculate the frequency of each q*-block
-                                     # 最後尾要素にfrequency
-    quasilist = quasi_list(datalist, sensitive)
+def freq_list(datalist, sensitive, seq_index):
+    # calculate the frequency of each q*-block
+    # 最後尾要素にfrequency
+    quasilist = quasi_list(datalist, [sensitive, seq_index])
     i = 0
     while i < len(quasilist):
         quasilist[i].append(1)
@@ -257,7 +260,7 @@ def same_judge_attr(datalist, attr_i, n):
     return 1
 
 
-def uniformer(datalist, attr_list, sensitive):
+def uniformer(datalist, attr_list, sensitive, seq_index):
     # まずは住所
     addr_first, addr_last = address_grouper(attr_list)
     if attr_list[addr_first] == 'poscode':
@@ -309,8 +312,10 @@ def uniformer(datalist, attr_list, sensitive):
 
     # 住所以外
     range_except_addr = list(range(0, addr_first))
-    range_except_addr.extend(list(range(addr_last+1, len(attr_list))))
+    range_except_addr.extend(list(range(addr_last+1, len(attr_list) + 1)))
     range_except_addr.remove(sensitive)
+    range_except_addr.remove(seq_index)
+
     for attr_i in range_except_addr:
         attr = attr_list[attr_i]
         while same_judge_attr(datalist, attr_i, n) == 0:
@@ -323,7 +328,7 @@ def uniformer(datalist, attr_list, sensitive):
 # 男女は最初に分けたほうが良い
 def sub_easy_anonymizer(datalist, sensitive, k, attr_list, seq_index):
 
-    n = len(datalist) -1  # decrement because of seq_index
+    n = len(datalist)
 
     # iはkづつ増えていく
     i = 0
@@ -332,11 +337,11 @@ def sub_easy_anonymizer(datalist, sensitive, k, attr_list, seq_index):
 
     while True:
         if n < i + 2*k:
-            dataset = uniformer(datalist[i:], attr_list, sensitive)
+            dataset = uniformer(datalist[i:], attr_list, sensitive, seq_index)
             result.extend(dataset)
             break
         else:
-            dataset = uniformer(datalist[i:i+k], attr_list, sensitive)
+            dataset = uniformer(datalist[i:i+k], attr_list, sensitive, seq_index)
             result.extend(dataset)
             i += k
     return result
