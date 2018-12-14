@@ -321,9 +321,9 @@ def uniformer(datalist, attr_list, sensitive):
 
 
 # 男女は最初に分けたほうが良い
-def sub_easy_anonymizer(datalist, sensitive, k, attr_list):
+def sub_easy_anonymizer(datalist, sensitive, k, attr_list, seq_index):
 
-    n = len(datalist)
+    n = len(datalist) -1  # decrement because of seq_index
 
     # iはkづつ増えていく
     i = 0
@@ -342,15 +342,15 @@ def sub_easy_anonymizer(datalist, sensitive, k, attr_list):
     return result
 
 
-def easy_anonymizer(datalist, sensitive, k, attr_list, priority):
-    subset.all_sorted_list(datalist, None, priority)
+def easy_anonymizer(datalist, sensitive, k, attr_list, priority, seq_index):
+    subset.all_sorted_list(datalist, [seq_index], priority)
 
     # 女の最後を得る
     for i, data in enumerate(datalist):
         if data[0] == '男': break
 
-    result = sub_easy_anonymizer(datalist[:i], sensitive, k, attr_list)
-    result.extend(sub_easy_anonymizer(datalist[i:], sensitive, k, attr_list))
+    result = sub_easy_anonymizer(datalist[:i], sensitive, k, attr_list, seq_index)
+    result.extend(sub_easy_anonymizer(datalist[i:], sensitive, k, attr_list, seq_index))
     return result
 
 

@@ -4,16 +4,17 @@
 import csv
 
 
-def all_sorted_list(datalist, sensitive, priority):
+def all_sorted_list(datalist, ignore_list, priority):
     if priority is None:
         priority = list(range(len(datalist[0])))
 
-    if sensitive is None:
+    if ignore_list is None:
         for i in priority[::-1]:
             datalist.sort(key=lambda x: x[i])
         return datalist
+
     for i in priority[::-1]:
-        if i != sensitive:
+        if i not in ignore_list:
             datalist.sort(key=lambda x: x[i])
     return datalist
 
@@ -37,8 +38,8 @@ def parsed_list(infile, sensitive):
     return init, datalist
 
 
-def csv_composer(init_row, outlist, sensitive, outfile):
-    outlist = all_sorted_list(outlist, sensitive, None)
+def csv_composer(init_row, outlist, sensitive, outfile, seq_index):
+    outlist = all_sorted_list(outlist, [sensitive, seq_index], None)
     try:
         with open(outfile, 'w') as csvfile:
             writer = csv.writer(csvfile, lineterminator='\n')
