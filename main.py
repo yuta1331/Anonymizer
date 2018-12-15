@@ -38,7 +38,7 @@ datalist = anonymizer.easy_anonymizer(datalist,
                                       ATTR_LIST,
                                       priority,
                                       seq_index)
-subset.all_sorted_list(datalist, [SENSITIVE, seq_index], None)
+subset.all_sorted_list(datalist, None, [SENSITIVE, seq_index])
 
 freq = anonymizer.freq_list(datalist, SENSITIVE, seq_index)
 calc_k = anonymizer.calc_k(freq)

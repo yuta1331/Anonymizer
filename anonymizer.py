@@ -225,7 +225,7 @@ def datafly(datalist, attr_list, sensitive, k):
     def mondrian(datalist, k, attr_i):
         if len(datalist) < k*2: return datalist
         else:
-            subset.all_sorted_list(datalist, None, None)
+            subset.all_sorted_list(datalist, None)
             mid = len(datalist)//2
 
             # attr_i属性をキーにして分割
@@ -348,7 +348,7 @@ def sub_easy_anonymizer(datalist, sensitive, k, attr_list, seq_index):
 
 
 def easy_anonymizer(datalist, sensitive, k, attr_list, priority, seq_index):
-    subset.all_sorted_list(datalist, [seq_index], priority)
+    subset.all_sorted_list(datalist, priority, [seq_index])
 
     # 女の最後を得る
     for i, data in enumerate(datalist):
